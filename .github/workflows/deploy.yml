@@ -35,10 +35,23 @@ jobs:
       - name: Install dependencies
         run: bun install
       
-      - name: Run tests
+      - name: Run unit tests
         run: bun test
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+      
+      - name: Run API tests
+        run: |
+          bun run build
+          bun run start &
+          sleep 10
+          # Test the health endpoint
+          curl -f http://localhost:3000/api/health || exit 1
+          # Test the database test endpoint
+          curl -f http://localhost:3000/api/db-test || exit 1
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          NODE_ENV: test
       
       - name: Build
         run: bun run build

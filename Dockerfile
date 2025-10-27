@@ -4,8 +4,14 @@ FROM oven/bun:alpine AS base
 # Stage 1: Install dependencies
 FROM base AS deps
 WORKDIR /app
+<<<<<<< HEAD
 COPY package.json bun.lockb* ./
 RUN bun install --frozen-lockfile
+=======
+COPY package.json bun.lockb ./
+RUN bun install
+
+>>>>>>> e40262eb61b8bd4b8312871d364200bbd9c0e756
 
 # Stage 2: Build application
 FROM base AS builder

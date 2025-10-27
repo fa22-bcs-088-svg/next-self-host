@@ -1,14 +1,41 @@
 version: "3.9"
+<<<<<<< HEAD
+=======
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    depends_on:
+      - db
+    networks:
+      - my_network
+>>>>>>> e40262eb61b8bd4b8312871d364200bbd9c0e756
 
 services:
   # PostgreSQL Database
   db:
+<<<<<<< HEAD
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-myuser}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
       POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
+=======
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+>>>>>>> e40262eb61b8bd4b8312871d364200bbd9c0e756
     ports:
       - "5432:5432"
     volumes:
@@ -22,6 +49,7 @@ services:
       retries: 5
       start_period: 10s
 
+<<<<<<< HEAD
   # Next.js + Bun Web App
   web:
     build: 
@@ -65,11 +93,16 @@ services:
     networks:
       - my_network
 
+=======
+>>>>>>> e40262eb61b8bd4b8312871d364200bbd9c0e756
 volumes:
   postgres_data:
     name: next-self-host-db-data
     
 networks:
   my_network:
+<<<<<<< HEAD
     name: next-self-host-network
+=======
+>>>>>>> e40262eb61b8bd4b8312871d364200bbd9c0e756
     driver: bridge
