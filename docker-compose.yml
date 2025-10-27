@@ -1,44 +1,75 @@
-services:
-  web:
-    build: .
-    ports:
-      - '3000:3000'
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - db
-    networks:
-      - my_network
+version: "3.9"
 
+services:
+  # PostgreSQL Database
   db:
-    image: postgres:latest
+    image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-myuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myuser} -d ${POSTGRES_DB:-mydatabase}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
+  # Next.js + Bun Web App
+  web:
+    build: 
+      context: .
+      args:
+        - DATABASE_URL=postgres://${POSTGRES_USER:-myuser}:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/${POSTGRES_DB:-mydatabase}
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${POSTGRES_USER:-myuser}:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/${POSTGRES_DB:-mydatabase}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - my_network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Cron job container to clear DB periodically
   cron:
-    image: alpine/curl
+    image: alpine:latest
+    container_name: cron-clear
+    restart: unless-stopped
     command: >
       sh -c "
-        echo '*/10 * * * * curl -X POST http://web:3000/db/clear' > /etc/crontabs/root && \
+        apk add --no-cache curl &&
+        echo '*/10 * * * * curl -X POST http://web:3000/db/clear' > /etc/crontabs/root &&
         crond -f -l 2
       "
     depends_on:
-      - web
+      web:
+        condition: service_started
     networks:
       - my_network
 
 volumes:
   postgres_data:
-
+    name: next-self-host-db-data
+    
 networks:
   my_network:
-    name: my_network
+    name: next-self-host-network
     driver: bridge
