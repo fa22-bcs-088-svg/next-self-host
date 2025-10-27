@@ -16,6 +16,8 @@ services:
     networks:
       - my_network
 
+services:
+  # PostgreSQL Database
   db:
     image: postgres:14-alpine
     environment:
@@ -28,10 +30,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - my_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myuser} -d ${POSTGRES_DB:-mydatabase}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   postgres_data:
-
+    name: next-self-host-db-data
+    
 networks:
   my_network:
     driver: bridge

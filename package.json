@@ -6,7 +6,8 @@
     "start": "node .next/standalone/server.js",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "migrate": "bunx drizzle-kit push"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
