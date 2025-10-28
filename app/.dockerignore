@@ -1,0 +1,47 @@
+# Ignore node modules and Bun dependencies
+node_modules
+bun.lockb
+
+# Ignore build outputs
+.next
+dist
+out
+
+# Ignore local environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Ignore logs and temporary files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+*.tmp
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore Docker files themselves (optional)
+Dockerfile
+.dockerignore
+
+# Ignore editor and OS files
+.vscode
+.idea
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore test and docs (not needed for production image)
+tests
+__tests__
+docs
+README.md
+
+# Ignore local scripts
+scripts/
