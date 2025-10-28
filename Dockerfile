@@ -13,8 +13,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG DATABASE_URL # <--- ADD THIS LINE IN YOUR DOCKERFILE
-ENV DATABASE_URL=$DATABASE_URL
 RUN bun run build
 
 # Stage 3: Run production server

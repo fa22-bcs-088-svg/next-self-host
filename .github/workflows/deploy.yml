@@ -1,9 +1,6 @@
 name: CI/CD Pipeline
-
-# ------------------------------------------------------------------
 # 1. Trigger Configuration
-# Runs on push or pull request to the main branch
-# ------------------------------------------------------------------
+
 on:
   push:
     branches: [main]
@@ -11,15 +8,11 @@ on:
     branches: [main]
 
 jobs:
-  # ------------------------------------------------------------------
   # Job 1: Build, Test, and Database Check
-  # This verifies the code works and the web application builds successfully.
-  # ------------------------------------------------------------------
   ci_checks:
     name: Build, Test & DB Check
     runs-on: ubuntu-latest
     
-    # Set up a temporary PostgreSQL service for testing
     services:
       postgres:
         image: postgres:16-alpine
@@ -79,10 +72,10 @@ jobs:
         uses: actions/checkout@v4
       
       # Set up QEMU and Buildx for wider platform compatibility
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
       
       # Log in to Docker Hub using GitHub Secrets
       - name: Login to Docker Hub
@@ -97,10 +90,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          # Builds for both AMD64 and ARM64 platforms
-          platforms: linux/amd64,linux/arm64 
+          # platforms: linux/amd64,linux/arm64 
           push: true
-          # Use the simple 'latest' tag for deployment
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/next-self-host:latest
           # --- ADDED ARGS FOR DOCKER BUILD TO RESOLVE DATABASE_URL ERROR ---
           build-args: |
